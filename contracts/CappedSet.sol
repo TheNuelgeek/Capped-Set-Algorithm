@@ -9,8 +9,8 @@ contract CappedSet {
 
     mapping(address => Element) private elements;
     address[] private elementAddresses;
-    uint256 private maxSize;
-    uint256 private lowestValue;
+    uint256 public maxSize;
+    uint256 public lowestValue;
     uint256 private lowestValueAddressIndex;
 
     constructor(uint256 _maxSize) {
@@ -92,6 +92,8 @@ contract CappedSet {
             lowestValueAddressIndex = elements[addr].index;
             lowestValue = newValue;
             return (addr, newValue);
+        }else{
+            (lowestValue, lowestValueAddressIndex) = findLowestValue();
         }
 
         return (elementAddresses[lowestValueAddressIndex], lowestValue);
@@ -103,6 +105,14 @@ contract CappedSet {
         require(elementAddresses.length > 0, "Set is empty");
         require(addr == elementAddresses[elements[addr].index], "Address doesn't exist");
 
+        if( elementAddresses.length == 1){
+            delete elements[addr];
+            elementAddresses.pop();
+            lowestValueAddressIndex = 0;
+            lowestValue = 0;
+            return (address(0), 0);
+        }
+        
         uint256 indexToRemove = elements[addr].index;
         uint256 valueOfIndexToRemove = elements[addr].value;
         address lastAddress = elementAddresses[elementAddresses.length - 1];
@@ -110,12 +120,7 @@ contract CappedSet {
         if (indexToRemove == elementAddresses.length - 1){
             elementAddresses.pop();
             delete elements[addr];
-        }else if( elementAddresses.length == 1){
-            elementAddresses.pop();
-            delete elements[addr];
-            lowestValueAddressIndex = 0;
-            lowestValue = 0;
-            return (address(0), 0);
+    
         }else{
 
             elements[lastAddress].index = indexToRemove;
@@ -138,14 +143,18 @@ contract CappedSet {
 
 
     function getValue(address addr) external view returns (uint256) {
+        require(addr != address(0), "Invalid address");
+        require(elementAddresses.length > 0, "Set is empty");
+        require(addr == elementAddresses[elements[addr].index], "Address doesn't exist");
         return elements[addr].value;
     }
 
-    function findLowestValue() internal view returns (uint256, uint256) {
+    function findLowestValue() public  view returns (uint256, uint256) {
         uint256 lowest = lowestValue;
         uint256 lowestIndex = lowestValueAddressIndex;
 
         for (uint256 i = 0; i < elementAddresses.length; i++) {
+            lowest = type(uint256).max; // Initialize lowest with the maximum possible value
             address currentAddress = elementAddresses[i];
             uint256 currentValue = elements[currentAddress].value;
             if (currentValue < lowest) {
@@ -159,3 +168,12 @@ contract CappedSet {
 
 
 }
+
+/**
+    0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2 - 15
+    0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db - 15
+    0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB - 6
+    0x617F2E2fD72FD9D5503197092aC168c91465E7f2 - 3 - 2
+    0x17F6AD8Ef982297579C203069C1DbfFE4348c372 - 4
+    0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 - 8
+**/
