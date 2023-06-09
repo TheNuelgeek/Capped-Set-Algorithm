@@ -1,28 +1,67 @@
-# Sample Hardhat Project
+# WEB3 SOLIDITY DEVELOPER TASK (Capped Set)
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+## Objective:
+- Implement a set-like structure in Solidity (using hardhat to help out) that
+only allows a certain amount of "elements" in the set. Once you've created the Solidity contract,
+we want you to test it in TypeScript, not in Solidity.
 
-Try running some of the following tasks:
+## Deployed to Polygon Testnet(Mumbai) 
+- Link: https://mumbai.polygonscan.com/address/0xd17a8146c4b952891e6b66338faf56d8e95c5fb7
+- Address: 0xD17a8146C4b952891e6b66338fAF56d8e95c5FB7
 
+## How to Run the Project
+
+1. Clone or fork the repository to your local machine.
+2. Navigate into the project directory and run `yarn install` to install all the required dependencies.
 ```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+`npx hardhat help`
+
+`npx hardhat test`
+
+`REPORT_GAS=true npx hardhat test`
+
+`npx hardhat node`
+
+`npx hardhat run scripts/deployCappedSet.ts`
+
+`npx hardhat run test/CappedSet.ts`
+
 ```
 
+## Dependencies
+The project uses the following dependencies:
 
-    0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2 - 15
-    0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db - 15
-    0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB - 6
-    0x617F2E2fD72FD9D5503197092aC168c91465E7f2 - 3 - 2
-    0x17F6AD8Ef982297579C203069C1DbfFE4348c372 - 4
-    0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 - 8
+- "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+- "@nomicfoundation/hardhat-ethers": "^3.0.2",
+- "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+- "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+- "@nomicfoundation/hardhat-verify": "^1.0.0",
+- "@typechain/ethers-v6": "^0.4.0",
+- "@typechain/hardhat": "^8.0.0",
+- "@types/chai": "^4.2.0",
+- "@types/mocha": ">=9.1.0",
+- "@types/node": ">=12.0.0",
+- "chai": "^4.2.0",
+- "ethers": "^6.4.0",
+- "hardhat": "^2.15.0",
+- "hardhat-gas-reporter": "^1.0.8",
+- "solidity-coverage": "^0.8.0",
+- "ts-node": ">=8.0.0",
+- "typechain": "^8.1.0",
+- "typescript": ">=4.5.0"
 
+## Features
 
+The contract allows users to:
 
+- insert new element to the set and return the lowest element's value.
+- update an existing element in the set and return the lowest element's value.
+- delete an element from the set and return the lowest element's value.
+- getValue function to retrieve the value for a given address.
 
-    Insert: gas	133611 gas - transaction cost	116183 gas - execution cost	94611 gas 
-    Remove: gas	76976 gas - transaction cost	38188 gas  - execution cost	26303 gas 
-    Update: gas	48208 gas - transaction cost	41920 gas  -execution cost	20348 gas 
+## Written In
+   - Solidity
+   - Typescript
+
+## License
+This project is licensed under the MIT License.
