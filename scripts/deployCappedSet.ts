@@ -1,12 +1,24 @@
 import { ethers } from "hardhat";
+import "@nomicfoundation/hardhat-ethers";
 
 async function main() {
-    const CappedSet = await ethers.getContractFactory('CappedSet')
+    const signer = await ethers.provider.getSigner();
+    const CappedSet = await ethers.getContractFactory("CappedSet")
     const cappedSet = await CappedSet.deploy(5)
     await cappedSet.waitForDeployment();
+    
+    const address = (await cappedSet).getAddress
 
+    console.log(address )
 
-    console.log(await cappedSet.getAddress())
+    const hre = require("hardhat")
+
+    hre.run(`verify:verify`, {
+        address: address,
+        constructorArguments: 5,
+    });
+    
+    
 
 }
 
