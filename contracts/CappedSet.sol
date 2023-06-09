@@ -103,7 +103,7 @@ contract CappedSet {
     function remove(address addr) external returns (address, uint256) {
         require(addr != address(0), "Invalid address");
         require(elementAddresses.length > 0, "Set is empty");
-        require(addr == elementAddresses[elements[addr].index], "Address doesn't exist");
+        require(elementAddresses[elements[addr].index] == addr, "Address doesn't exist");
 
         if( elementAddresses.length == 1){
             delete elements[addr];
@@ -176,4 +176,13 @@ contract CappedSet {
     0x617F2E2fD72FD9D5503197092aC168c91465E7f2 - 3 - 2
     0x17F6AD8Ef982297579C203069C1DbfFE4348c372 - 4
     0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 - 8
+
+
+
+
+    Insert: gas	133611 gas - transaction cost	116183 gas - execution cost	94611 gas 
+    Remove: gas	76976 gas - transaction cost	38188 gas  - execution cost	26303 gas 
+    Update: gas	48208 gas - transaction cost	41920 gas  -execution cost	20348 gas 
 **/
+
+
