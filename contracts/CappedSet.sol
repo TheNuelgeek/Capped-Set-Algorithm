@@ -2,11 +2,15 @@
 pragma solidity ^0.8.9;
 
 contract CappedSet {
+
+    // Represents an element in the capped set.
+    // It stores the value and index of the element.
     struct Element {
         uint256 value;
         uint256 index;
     }
-
+    
+    // Each element is associated with an address and contains the value and index of the element
     mapping(address => Element) private elements;
     address[] private elementAddresses;
     uint256 public maxSize;
@@ -17,6 +21,26 @@ contract CappedSet {
         require(_maxSize > 0, "Max size must be greater than 0");
         maxSize = _maxSize;
     }
+
+    /**
+        Inserts a new address-value pair into the capped set.
+
+        @param addr The address to insert.
+
+        @param value The corresponding value to insert.
+
+        @return The address and value of the inserted element or the current lowest value element.
+
+        @dev The function enforces the requirement that the address is not the zero address and the value is greater than zero.
+
+        If it is the first value inserted, it initializes the capped set and returns the default values.
+
+        If the set is not full, it adds the element and updates the lowest value if necessary.
+
+        If the set is full, it replaces the lowest value element with the new element and updates the lowest value.
+
+        It then rechecks the lowest value among the remaining elements and returns the appropriate address-value pair.
+    */
 
     function insert(address addr, uint256 value) external returns (address, uint256) {
         require(addr != address(0), "Invalid address");
@@ -32,7 +56,6 @@ contract CappedSet {
             return (address(0), 0);
         }
 
-        // If the element is not up to the max and the value added is less than the current lowest value
         if (elementAddresses.length < maxSize) {
             elementAddresses.push(addr);
             elements[addr].value = value;
@@ -44,9 +67,7 @@ contract CappedSet {
                 return (addr, value);
             }else {
                 return (elementAddresses[lowestValueAddressIndex], lowestValue);
-            }
-
-            
+            }     
         }
 
         if (value == lowestValue) {
@@ -62,7 +83,6 @@ contract CappedSet {
         elements[addr].index = lowestValueAddressIndex;
         lowestValue = value;
         
-        // I rechecked for the lowest value after adding the new element
         if (value < currentLowest) {
             lowestValueAddressIndex = elements[addr].index;
             return (addr, value);
@@ -79,6 +99,26 @@ contract CappedSet {
         
         return (elementAddresses[lowestValueAddressIndex], lowestValue);
     }
+
+    /**
+        Updates the value of an existing element in the capped set.
+
+        @param addr The address of the element to update.
+
+        @param newValue The new value to assign to the element.
+
+        @return The address and value of the updated element or the current lowest value element.
+
+        @dev The function enforces the requirement that the address is not the zero address, exists in the set,
+
+        and the new value is greater than zero and different from the current value.
+
+        It updates the value of the element and checks if the lowest value needs to be updated.
+
+        If the new value is lower than the current lowest value, it updates the lowest value and address.
+
+        Otherwise, it finds the new lowest value among the remaining elements and returns the appropriate address-value pair.
+    */
 
     function update(address addr, uint256 newValue) external returns (address, uint256) {
         require(addr != address(0), "Invalid address");
@@ -99,6 +139,31 @@ contract CappedSet {
         return (elementAddresses[lowestValueAddressIndex], lowestValue);
     }
 
+    /**
+        Removes an existing element from the capped set.
+
+        @param addr The address of the element to remove.
+
+        @return The address and value of the removed element or the current lowest value element.
+
+        @dev The function enforces the requirement that the address is not the zero address, the set is not empty,
+
+        and the address exists in the set.
+
+        If there is only one element in the set, it removes the element, updates the lowest value and address to zero,
+
+        and returns the appropriate address-value pair.
+
+        Otherwise, it removes the element by swapping it with the last element, updates the corresponding mappings,
+
+        and checks if the lowest value needs to be updated.
+
+        If the value of the removed element was the lowest value, it finds the new lowest value among the remaining elements.
+
+        If the value of the last element was the lowest value, it updates the lowest value address index accordingly.
+
+        Finally, it returns the address-value pair of the current lowest value element.
+    */
 
     function remove(address addr) external returns (address, uint256) {
         require(addr != address(0), "Invalid address");
@@ -141,6 +206,20 @@ contract CappedSet {
     }
 
 
+     /**
+
+        Retrieves the value of an element in the capped set.
+
+        @param addr The address of the element.
+
+        @return The value of the element.
+
+        @dev The function enforces the requirement that the address is not the zero address,
+        
+        the set is not empty, and the address exists in the set.
+
+        It returns the value of the element associated with the given address.
+    */
 
     function getValue(address addr) external view returns (uint256) {
         require(addr != address(0), "Invalid address");
@@ -148,6 +227,20 @@ contract CappedSet {
         require(addr == elementAddresses[elements[addr].index], "Address doesn't exist");
         return elements[addr].value;
     }
+
+    /**
+        Finds the lowest value among the elements in the capped set.
+
+        @return The lowest value and its corresponding index in the element addresses array.
+
+        @dev The function iterates through the element addresses array to find the lowest value.
+
+        It initializes the lowest with the maximum possible value and compares it with each element's value.
+
+        If a lower value is found, it updates the lowest value and its index.
+
+        Finally, it returns the lowest value and its index.
+    */
 
     function findLowestValue() public  view returns (uint256, uint256) {
         uint256 lowest = lowestValue;
@@ -169,20 +262,5 @@ contract CappedSet {
 
 }
 
-/**
-    0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2 - 15
-    0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db - 15
-    0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB - 6
-    0x617F2E2fD72FD9D5503197092aC168c91465E7f2 - 3 - 2
-    0x17F6AD8Ef982297579C203069C1DbfFE4348c372 - 4
-    0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 - 8
-
-
-
-
-    Insert: gas	133611 gas - transaction cost	116183 gas - execution cost	94611 gas 
-    Remove: gas	76976 gas - transaction cost	38188 gas  - execution cost	26303 gas 
-    Update: gas	48208 gas - transaction cost	41920 gas  -execution cost	20348 gas 
-**/
 
 
