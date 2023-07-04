@@ -5,6 +5,38 @@
 only allows a certain amount of "elements" in the set. Once you've created the Solidity contract,
 we want you to test it in TypeScript, not in Solidity.
 
+## The CappedSet contract:
+
+- Each "element" in the set is a pair: an address and a value.
+When the set gets too big (i.e., it reaches its max), it should boot out the element with the lowest
+value.
+Its constructor takes an argument numElements that represents the maximum number of
+elements that can be in the set.
+There are four methods that we would like you to implement in CappedSet.sol:
+
+- insert(address addr, uint256 value) returns (address newLowestAddress, uint256
+newLowestValue)
+This method should add a new element (addr and value) and return the new element with the
+lowest value, which might be itself. If this is the first element being inserted, this method should
+return (0,0).
+- update(address addr, uint256 newVal) returns (address newLowestAddress, uint256
+newLowestValue)
+This method should update the existing element with address addr, if it exists, and return the
+new element with the lowest value, which might be itself.
+- remove(address addr) returns (address newLowestAddress, uint256 newLowestValue)
+This method should delete the existing element with address addr, if it exists, and return the
+new element with the lowest value.
+- getValue(address addr) returns (uint256)
+Retrieves the value for the element with address addr, if it exists.
+You're free to design the contract however you want as long as it follows the above behaviour.
+You can add as many contract members/fields as you wish. You can also use any open-source
+solidity libraries such as openzeppelin.
+
+Testing the contract:
+
+For interacting with the contracts, you can use hardhat. Test as much as you think is necessary.
+Remember to use TypeScript and not Solidity to test the contracts.
+
 ## Deployed to Polygon Testnet(Mumbai) 
 - Link: https://mumbai.polygonscan.com/address/0xd17a8146c4b952891e6b66338faf56d8e95c5fb7
 - Address: 0xD17a8146C4b952891e6b66338fAF56d8e95c5FB7
